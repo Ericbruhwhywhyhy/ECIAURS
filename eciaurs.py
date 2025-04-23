@@ -6,7 +6,7 @@ import urllib.request
 import ast
 import threading
 
-print('CI Extractor CreamPython Edition \n©2025 Ericbruh / Marisa Kirisame')
+print('Eric's Chicken invaders Assets Unpacking and Repacking script\n©2025 Ericbruh / Marisa Kirisame')
 mode = input('chose mode:(1: unpack, 2: repack): ')
 table = 'https://file.garden/Z2lW4yuyMSaHkbSp/map.txt'
 s = urllib.request.build_opener()
@@ -16,16 +16,6 @@ urllib.request.install_opener(s)
 with urllib.request.urlopen(table) as response:
     data = response.read().decode()
     c = ast.literal_eval(data)
-
-def offsettable(filename, o, s, z, output):
-
-    with open(os.path.join(output, 'offset.txt'), 'a') as f: 
-        if s == z:
-            f.write(f"{filename},{o},{s}\n")
-            print('b')
-        else:
-            f.write(f"{filename},{o},{z},{s}\n")
-            print('e')
 
 def read_u32(f):
     return struct.unpack("<I", f.read(4))[0]
@@ -70,19 +60,16 @@ def extract(filename, output_dir="."):
                     continue
             output_file = str(name).replace("[", "").replace("'", '').replace("]", "")
             output_path = os.path.dirname(output_file)
-            #print(output_path)
-            #print(name)
             if output_path != '/sdcard':
             	os.makedirs(os.path.join(output_dir, output_path), exist_ok=True)
             	try:
             		with open(os.path.join(output_dir, output_file), "wb") as out_file:
             			out_file.write(data)
-            			#print(f"Extracted: {name}")
+            			print(f"Extracted: {name}")
             	except:
             		pass
             else:
             	print('skipping...')
-            os.execv(__file__, sys.argv)
 
 def repack(f):
 	o = 0
@@ -130,8 +117,7 @@ def repack(f):
 					j.write(struct.pack('<I', esize))
 					print('Rewritten and repacked!')
 					r = r + 1
-					print(r)
-					#print(zsize, size)
+					
 				elif result is not None and replacing not in result:
 					pass
 				else:
