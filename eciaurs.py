@@ -6,7 +6,7 @@ import urllib.request
 import ast
 import threading
 
-print('Eric's Chicken invaders Assets Unpacking and Repacking script\n©2025 Ericbruh / Marisa Kirisame')
+print("Eric's Chicken invaders Assets Unpacking and Repacking script\n©2025 Ericbruh / Marisa Kirisame")
 mode = input('chose mode:(1: unpack, 2: repack): ')
 table = 'https://file.garden/Z2lW4yuyMSaHkbSp/map.txt'
 s = urllib.request.build_opener()
