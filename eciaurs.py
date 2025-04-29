@@ -196,7 +196,7 @@ if mode == '1':
 	os.makedirs(os.path.join(os.path.dirname(path), 'extracted/'), exist_ok=True)
 	out = os.path.join(os.path.dirname(path), 'extracted/')
 	print(f"extracting to {out}")
-	extract(path, out)
+	unpack(path, out)
 	
 elif mode == '2':
 	path = input('Type out path to your 222x archive 222x archive: ')
