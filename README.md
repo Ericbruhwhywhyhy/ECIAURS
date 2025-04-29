@@ -8,7 +8,9 @@ this project is NOT endorsed by or affilliated with Interaction Studios in anywa
 
 by using this, you have achknowledged your responsibility to your game or game files. There will be no support if anything broke (unless if it's mod script related in which case contact me)
 
-do NOT redistribute your game file (that is your .222x/.122x file) as a request of Interaction Studios themselves.
+do NOT redistribute your game file (that is your .222x/.122x file) as a request of Interaction Studios themselves:
+![unknown-2](https://github.com/user-attachments/assets/639c1e90-181a-4fce-b1ed-d4bcf4394921)
+
 
 if you want to look into texture modding, TGATool will help you as the game uses proprietary .tga format that can only be editable through conversion: https://github.com/VerMishelb/TGATool
 ## RESOURCES
