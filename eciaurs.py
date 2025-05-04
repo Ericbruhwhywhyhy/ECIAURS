@@ -1,14 +1,14 @@
 import struct
 import os
-#import sys
+import sys
 import zlib
 import urllib.request
 import ast
 
-print('Fetching table from https://file.garden/Z2lW4yuyMSaHkbSp/map.txt...')
+print('Fetching table from https://gist.githubusercontent.com/Ericbruhwhywhyhy/757d3de19042070f70add54c180f81c1/raw/4537c2c7e1d232349cd00fd089abc69c0d367017/map.txt')
 
 #table was made from ravenDS's table: https://github.com/RavenDS/Chicken-Extractor/blob/main/CIUTable.txt'
-table = 'https://file.garden/Z2lW4yuyMSaHkbSp/map.txt'
+table = 'https://gist.githubusercontent.com/Ericbruhwhywhyhy/757d3de19042070f70add54c180f81c1/raw/4537c2c7e1d232349cd00fd089abc69c0d367017/map.txt'
 s = urllib.request.build_opener()
 #reimu my beloved :3
 s.addheaders = [('User-Agent', "reimu/1.0")]
@@ -27,7 +27,50 @@ def read_u32(f):
 def get_u32(input):
 	return struct.pack('<I', input)
 
+def process_tga(data):
+    with open(data, 'rb+') as f:
+
+        f.seek(0) 
+        width = struct.unpack('<L', f.read(4))[0]
+
+        height = struct.unpack('<L', f.read(4))[0]
+
+        file_type = struct.unpack('<L', f.read(4))[0]
+
+        offset = f.tell()
+
+        f.seek(0, os.SEEK_END)
+        size = f.tell() - offset
+
+        f.seek(offset)
+        image_data = f.read(size)
+        header = bytearray()
+        if file_type == 0x8:
+        	header += struct.pack('<H', 0)          # id length
+        	header += struct.pack('<H', 3)          # color map type
+        	header += struct.pack('<L', 0)          # image type
+        	header += struct.pack('<L', 0)          # color map specification
+        	header += struct.pack('<H', width)      # width
+        	header += struct.pack('<H', height)     # height
+        	header += struct.pack('<B', 8)          # pixel depth
+        	header += struct.pack('<B', 8)          # image descriptor
+        elif file_type == 0x20:
+        		header += struct.pack('<H', 0)          # id length
+        		header += struct.pack('<H', 2)          # color map type
+        		header += struct.pack('<L', 0)          # image type
+        		header += struct.pack('<L', 0)          # color map specification
+        		header += struct.pack('<H', width)      # width
+        		header += struct.pack('<H', height)     # height
+        		header += struct.pack('<B', 32)         # pixel depth
+        		header += struct.pack('<B', 0)          # image descriptor
+        else:
+        		raise ValueError("Processing failed")
+        f.seek(0, 0)
+        f.write(header)
+        f.write(image_data)
+
 def unpack(filename, output_dir="."):
+    unpacked = 0
     try:
     	open(filename)
     except Exception as e:
@@ -52,10 +95,10 @@ def unpack(filename, output_dir="."):
             name.replace('.', '')
             #print(name)
             if c.get(str(name).lower()) != None and c.get(str(name).lower()) != ' ':
-            	print('replacing name...')
+            	#print('replacing name...')
             	#makeoffset(name, f) no longer necessary as the new repacking function reconstruct 222x from scratch
             	name = c.get(str(name).lower())
-            	print(name)
+            	#print(name)
             offset = read_u32(f)
             zsize = read_u32(f)
             size = read_u32(f)
@@ -76,7 +119,7 @@ def unpack(filename, output_dir="."):
             #cursed way to strip name
             output_file = str(name).replace("[", "").replace("'", '').replace("]", "")
             output_path = os.path.dirname(output_file)
-            print(output_file)
+            #print(output_file)
             #print(name)
             #hacky way of actually make this work on Android
             if output_path != '/sdcard':
@@ -84,11 +127,21 @@ def unpack(filename, output_dir="."):
             	try:
             		with open(os.path.join(output_dir, output_file), "wb") as out_file:
             			out_file.write(data)
-            			print(f"Extracted: {name}")
+            			unpacked  = unpacked + 1
+            			#print(f"Extracted: {name}")
+            			if '.tga' in str(name).replace("[", "").replace("'", '').replace("]", ""):
+            					process_tga(os.path.join(output_dir, output_file))
             	except:
             		pass
             else:
             	print('skipping...')
+            	
+            sys.stdout.write('\r'f"Unpacked {unpacked}/{num_files} files")
+            sys.stdout.flush()
+    print('Done unpacking! Now restarting script...')
+    print('\n')
+    os.execl(sys.executable, sys.executable, *sys.argv)
+            
             	
 #repack function rewritten from scratch! No offset table required!
 def repack(f):
@@ -189,10 +242,12 @@ def repack(f):
             new.write(get_u32(entry['zsize']))
             new.write(get_u32(entry['size']))
 
-    print("Done repacking!")
+    print("Done repacking! Now restarting script...")
+    print('\n')
+    os.execl(sys.executable, sys.executable, *sys.argv)
 if mode == '1':
 	path = input('Type out path to your 222x archive: ')
-	path = "/sdcard/experiment/CIU.dat.122x.standard.mp3"
+	#path = "/sdcard/CIU.dat.122x.standard.mp3"
 	os.makedirs(os.path.join(os.path.dirname(path), 'extracted/'), exist_ok=True)
 	out = os.path.join(os.path.dirname(path), 'extracted/')
 	print(f"extracting to {out}")
